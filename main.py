@@ -1,47 +1,57 @@
+import argparse
 import subprocess
 import sys
 from traceback import format_exc
-from colors import Colors
 
-packages_file = r'C:\Users\Rassel\PycharmProjects\win-package-installer\req.txt'
-success_installed = []
-fail_installed = {}
+# packages_file = r'C:\Users\Rassel\PycharmProjects\win-package-installer\req.txt'
 
+parser = argparse.ArgumentParser(description='Install packages from file of requirements.')
+parser.add_argument('packages_file', metavar='File', type=str, help='Path to file')
+
+if len(sys.argv) != 2:
+    print('Incorrect command. For help use `python.exe <current_script>.py -h')
+    exit(1)
+
+args = parser.parse_args()
+
+packages_file = sys.argv[1].strip('\'"')
 try:
     req_file = open(packages_file, 'r')
 except FileNotFoundError:
-    print(f'{Colors.FAIL}File {packages_file} does not find!{Colors.STD}')
+    print(f'File {packages_file} does not find!')
     exit(1)
 
+success_installed = []
+fail_installed = {}
 for package_name in req_file:
+    package_name = package_name.rstrip('\n')
     try:
-        print(f'{Colors.STD}Installing {package_name}...')
-        status = subprocess.call(
-            [sys.executable, '-m', 'pip', 'install', package_name], stdout=subprocess.DEVNULL
+        print(f'Installing {package_name}...')
+        result = subprocess.run(
+            [sys.executable, '-m', 'pip', 'install', package_name], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
         )
 
-        if status == 0:
+        if result.returncode == 0:
             success_installed.append(package_name)
-            print(f'{Colors.SUCCESS}Package {package_name} was installed succesfully.{Colors.STD}')
         else:
-            fail_installed[package_name] = format_exc()
-            print(f'{Colors.FAIL}Package {package_name} was not installed.{Colors.STD}')
+            fail_installed[package_name] = result.stderr.decode('utf-8')
 
     except Exception:
-        print(f'{Colors.FAIL}Unknown error!{Colors.STD}')
+        print(f'Unknown error:{format_exc()}')
         exit(1)
 
+print(f'\nInstalling packages is completed. Results:')
+
 if success_installed:
-    print(f'{Colors.SUCCESS}Next packages were installed successfully:', '\n'.join(success_installed))
+    print(f'Next packages were installed successfully:\n', '; '.join(success_installed))
 
 if fail_installed:
-    print(f'{Colors.FAIL}Next packages were not installed from errors:', '\n'.join(fail_installed.keys()))
-
-print(f'{Colors.STD}')
+    print(f'Next packages were not installed from errors:', '\n'.join(fail_installed.keys()))
 
 req_file.close()
 
 if input('Show errors(y/n)?') == 'y':
+    print('')
     for k, v in fail_installed.items():
         print(f'Package: {k}')
         print(f'Error: {v}')

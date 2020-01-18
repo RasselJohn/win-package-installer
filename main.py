@@ -3,8 +3,6 @@ import subprocess
 import sys
 from traceback import format_exc
 
-# packages_file = r'C:\Users\Rassel\PycharmProjects\win-package-installer\req.txt'
-
 parser = argparse.ArgumentParser(description='Install packages from file of requirements.')
 parser.add_argument('packages_file', metavar='File', type=str, help='Path to file')
 
@@ -46,7 +44,7 @@ if success_installed:
     print(f'Next packages were installed successfully:\n', '; '.join(success_installed))
 
 if fail_installed:
-    print(f'Next packages were not installed from errors:', '\n'.join(fail_installed.keys()))
+    print(f'\nNext packages were not installed from errors:', '; '.join(fail_installed.keys()))
 
 req_file.close()
 

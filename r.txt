@@ -1,1 +1,0 @@
-django-ipgeobase==1.0.7

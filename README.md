@@ -13,4 +13,4 @@ git clone https://github.com/RasselJohn/win-package-installer.git
 cd win-package-installer
 python main.py [path to requirements.txt]
 cd ..
-rmdir win-package-installer
+rd /s win-package-installer

@@ -58,6 +58,9 @@ req_file.close()
 
 if input('Show errors(y/n)?') == 'y':
     print()
-    for k, v in fail_installed.items():
-        print(f'Package: {k}')
-        print(f'Error: {v}')
+    if fail_installed:
+        for k, v in fail_installed.items():
+            print(f'Package: {k}')
+            print(f'Error: {v}')
+    else:
+        print(f'Operation was success. Errors are absent.')

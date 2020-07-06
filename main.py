@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(
     description='Install packages from file of requirements.'
 )
 parser.add_argument(
-    'packages_file', metavar='File', type=str,
+    'packages_file', metavar='File', nargs='?', type=str, default=default_path,
     help=f'Path to file (default value is {default_path}  - out of this script.)'
 )
 
@@ -19,7 +19,7 @@ if len(sys.argv) > 2:
 args = parser.parse_args()
 success_installed = fail_installed = None
 try:
-    packages_file = sys.argv[1].strip('\'"') if sys.argv[1] else default_path
+    packages_file = sys.argv[1].strip('\'"')
     req_file = open_requirement_file(packages_file)
     success_installed, fail_installed = install_packages(req_file)
 except Exception:

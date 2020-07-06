@@ -9,10 +9,10 @@ This tool installs and print a list of installed and failed packages.
 
 ### Usage
 ***
-Commands by queue:
+Commands respectively (default path to requirements.txt is current directory, e.g. where commands will run):
+
 ```
-git clone https://github.com/RasselJohn/win-package-installer.git
-cd win-package-installer
+git clone https://github.com/RasselJohn/win-package-installer.git && cd win-package-installer
 python main.py [path to requirements.txt]
-cd ..
-rd /s win-package-installer
+cd .. && rd /s win-package-installer
+```

@@ -1,50 +1,30 @@
 import argparse
-import subprocess
 import sys
 from traceback import format_exc
+
+from utils import default_path, open_requirement_file, install_packages
 
 parser = argparse.ArgumentParser(
     description='Install packages from file of requirements.'
 )
-parser.add_argument('packages_file', metavar='File', type=str, help='Path to file')
+parser.add_argument(
+    'packages_file', metavar='File', type=str,
+    help=f'Path to file (default value is {default_path}  - out of this script.)'
+)
 
-if len(sys.argv) != 2:
+if len(sys.argv) > 2:
     print('Incorrect command. For help use `python.exe <current_script>.py -h`')
     exit(1)
 
 args = parser.parse_args()
-
-packages_file = sys.argv[1].strip('\'"')
+success_installed = fail_installed = None
 try:
-    req_file = open(packages_file, 'r')
-except FileNotFoundError:
-    print(f'File {packages_file} does not find!')
+    packages_file = sys.argv[1].strip('\'"') if sys.argv[1] else default_path
+    req_file = open_requirement_file(packages_file)
+    success_installed, fail_installed = install_packages(req_file)
+except Exception:
+    print(f'Error: {format_exc()}')
     exit(1)
-
-success_installed = []
-fail_installed = {}
-
-for package in req_file:
-    package_name = package.strip()
-    if not package_name or package_name.startswith('#'):
-        continue
-
-    try:
-        print(f'Installing {package_name}...')
-        result = subprocess.run(
-            [sys.executable, '-m', 'pip', 'install', package_name],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE
-        )
-
-        if result.returncode == 0:
-            success_installed.append(package_name)
-        else:
-            fail_installed[package_name] = result.stderr.decode('utf-8')
-
-    except Exception:
-        print(f'Unknown error:{format_exc()}')
-        exit(1)
 
 print(f'\nInstalling packages is completed.')
 
@@ -53,8 +33,6 @@ if success_installed:
 
 if fail_installed:
     print(f'\nNext packages were not installed from errors:\n', '; '.join(fail_installed.keys()))
-
-req_file.close()
 
 if input('Show errors(y/n)?') == 'y':
     if fail_installed:

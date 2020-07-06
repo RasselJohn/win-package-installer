@@ -19,7 +19,7 @@ if len(sys.argv) > 2:
 args = parser.parse_args()
 success_installed = fail_installed = None
 try:
-    packages_file = sys.argv[1].strip('\'"')
+    packages_file = args.packages_file
     req_file = open_requirement_file(packages_file)
     success_installed, fail_installed = install_packages(req_file)
 except Exception:
